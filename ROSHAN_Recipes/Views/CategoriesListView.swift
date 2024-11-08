@@ -38,7 +38,7 @@ struct CategoriesListView: View {
                             .font(.headline)
                     }
                 }
-                .padding()
+                .padding(.horizontal, 5)
             }
             .navigationTitle("Categories")
             .onAppear {
