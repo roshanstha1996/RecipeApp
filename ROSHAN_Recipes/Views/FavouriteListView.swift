@@ -1,3 +1,10 @@
+//
+//  RecipeDetailView.swift
+//  ROSHAN_Recipes
+//
+//  Created by ROSHAN on 2024-11-07.
+//
+
 import SwiftUI
 import CoreData
 
@@ -7,6 +14,8 @@ struct FavouriteListView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var alertTitle = ""
+    
+    @State private var selectedFavourite: FavouriteRecipe?
 
     var body: some View {
         NavigationStack {
@@ -45,16 +54,11 @@ struct FavouriteListView: View {
                     } // End of HStack
                 } // End of ForEach
                 .onDelete { indexSet in
-                    for index in indexSet {
+                    if let index = indexSet.first {
                         let favourite = self.favouriteViewModel.favourites[index]
-                        if self.favouriteViewModel.removeFavouriteById(idMeal: favourite.idMeal ?? "") {
-                            self.alertTitle = "Success"
-                            self.alertMessage = "Successfully removed from Favorites"
-                        } else {
-                            self.alertTitle = "Failure"
-                            self.alertMessage = "Can't remove from Favorites"
-                        }
-
+                        self.selectedFavourite = favourite
+                        self.alertTitle = "Confirm Deletion"
+                        self.alertMessage = "Are you sure you want to remove this recipe from your favorites?"
                         self.showAlert = true
                     }
                 } // End of onDelete
@@ -64,7 +68,20 @@ struct FavouriteListView: View {
                 Alert(
                     title: Text(self.alertTitle),
                     message: Text(self.alertMessage),
-                    dismissButton: .default(Text("Okay"))
+                    primaryButton: .default(Text("Delete")) {
+                        
+                        if let favourite = selectedFavourite {
+                            if favouriteViewModel.removeFavouriteById(idMeal: favourite.idMeal ?? "") {
+                                self.alertTitle = ""
+                                self.alertMessage = "Successfully removed from Favorites."
+                                favouriteViewModel.fetchFavourites() // Refresh the list
+                            } else {
+                                self.alertTitle = "Failure"
+                                self.alertMessage = "Unable to remove from Favorites."
+                            }
+                        }
+                    },
+                    secondaryButton: .cancel()// on cancel do nothing
                 )
             }
         }
