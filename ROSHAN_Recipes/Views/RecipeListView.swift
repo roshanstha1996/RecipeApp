@@ -37,7 +37,7 @@ struct RecipeListView: View {
                         .font(.headline)
                         .padding(.leading)
                 }
-                .padding()
+                .padding(.horizontal, 5)
             }
         }
         .navigationTitle(categoryName)
